@@ -1,0 +1,6 @@
+.vscode
+_build*
+cmake*/
+bin/
+obj/
+test.conf

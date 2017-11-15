@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+message EventMessage 
+{
+    required uint32 Version = 1;	
+    required double WindSpeed = 2;
+}
