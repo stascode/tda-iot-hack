@@ -3,20 +3,23 @@
 The goal is to build an end to end pipeline for telematics collection and visualization. 
 
 # Prerequisites 
-0. git
-1. az cli
-2. docker
+* Install [Git CLI](https://git-scm.com/downloads)
 
-Clone this repo as follows:
+* Install [az cli](https://git-scm.com/downloads)
+  * If you have az installed run `az component update` to update it to the latest features.
+
+* Install [docker CE](https://docs.docker.com/engine/installation/). If you are on Windows, after installation you should do the steps below:
+  1. Switch to the Linux containers mode: 
+	1. Right-click the Docker icon in the tray. If you see the option _Switch to Windows containers..._, you're good. Else if you see the option _Switch to Linux containers..._, click on it. 
+  2. Share C: drive: 
+	1. Right-click the Docker icon in the tray, choose _Settings_ -> _Shared Drives_
+	2. Share C: drive or the drive where you cloned this git repo
+
+* Clone this repo as follows:
 ```shell
 git clone <this repo uri> cat-iot-hack
 cd cat-iot-hack
 git submodule update --init --recursive
-```
-
-Update az cli:
-```shell
-az component update
 ```
 
 # Requirements
