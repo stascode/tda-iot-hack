@@ -10,10 +10,10 @@ The goal is to build an end to end pipeline for telematics collection and visual
 
 * Install [docker CE](https://docs.docker.com/engine/installation/). If you are on Windows, after installation you should do the steps below:
   1. Switch to the Linux containers mode: 
-	1. Right-click the Docker icon in the tray. If you see the option _Switch to Windows containers..._, you're good. Else if you see the option _Switch to Linux containers..._, click on it. 
+    1. Right-click the Docker icon in the tray. If you see the option _Switch to Windows containers..._, you're good. Else if you see the option _Switch to Linux containers..._, click on it. 
   2. Share C: drive: 
-	1. Right-click the Docker icon in the tray, choose _Settings_ -> _Shared Drives_
-	2. Share C: drive or the drive where you cloned this git repo
+    1. Right-click the Docker icon in the tray, choose _Settings_ -> _Shared Drives_
+    2. Share C: drive or the drive where you cloned this git repo
 
 * Clone this repo as follows:
 ```shell
