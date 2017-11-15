@@ -1,0 +1,6 @@
+FROM alpine:latest
+
+RUN apk --update add build-base cmake openssl openssl-dev
+RUN apk add linux-headers util-linux-dev
+
+WORKDIR /app
