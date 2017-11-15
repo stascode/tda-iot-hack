@@ -1,0 +1,20 @@
+{
+  "disabled": false,
+  "bindings": [
+    {
+      "type": "eventHubTrigger",
+      "name": "eventData",
+      "direction": "in",
+      "path": "stazehub",
+      "connection": "InEventHubConnection",
+      "consumerGroup": "$Default"
+    },
+    {
+      "type": "eventHub",
+      "name": "outEvents",
+      "path": "deviceEvents",
+      "connection": "OutEventHubConnection",
+      "direction": "out"
+  }
+  ]
+}
