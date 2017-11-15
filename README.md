@@ -5,7 +5,7 @@ The goal is to build an end to end pipeline for telematics collection and visual
 # Prerequisites 
 * Install [Git CLI](https://git-scm.com/downloads)
 
-* Install [az cli](https://git-scm.com/downloads)
+* Install [az cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
   * If you have az installed run `az component update` to update it to the latest features.
 
 * Install [docker CE](https://docs.docker.com/engine/installation/). If you are on Windows, after installation you should do the steps below:
