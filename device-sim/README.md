@@ -21,7 +21,7 @@ As you get the image built and `docker images` command outputs the name of your 
 
 As soon as you interactively shell'ed into your container you can compile the firmware as shown below
 ```shell
-cp /app
+cd /app
 mkdir -p cmake
 cd cmake
 cmake -Duse_amqp=OFF -Duse_http=OFF -Ddont_use_uploadtoblob=ON -Duse_condition=ON -Duse_wsio=OFF -Duse_cppunittest=OFF ..
