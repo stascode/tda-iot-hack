@@ -7,17 +7,16 @@
 #include "pb_encode.h"
 #include "contoso.pb.h"
 
-// TODO Place some base value for the wind speed
-static const double windSpeedBase = ...;
+static const double windSpeedBase = 10.0;
 
 size_t DeviceMessage_GenerateTelemetryMessage(uint32_t *randSeed, uint8_t *buffer, size_t bufferSize) 
 {
-	// TODO Generate a random but realistic delta using rand_r(randSeed), that is make the wind oscilate within a range of from 0 to +/-1 mph around the base value.  
-	double delta = ...
+	double delta = (double)(rand_r(randSeed) % 10 + 1) / 10;
+	if (rand_r(randSeed) % 2)
+		delta *= -1;
 
 	double avgWindSpeed = windSpeedBase + delta;
 
-	// Serialize it to Protobuf
 	pb_ostream_t stream = pb_ostream_from_buffer(buffer, bufferSize);
 
 	EventMessage message = EventMessage_init_zero;

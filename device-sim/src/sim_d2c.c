@@ -47,17 +47,16 @@ static void sendConfirmationCallback(
 {
     DEVICE_SIMULATE_CONTEXT *ctx = (DEVICE_SIMULATE_CONTEXT *)context;
 
-    if (
-        // TODO Check if result contains success or not and emit a log entry
-        ...
-    ) {
+    if (IOTHUB_CLIENT_CONFIRMATION_OK != result) {
         LogError("FW: Device %s: confirmation callback error %s", ctx->deviceId,
             ENUM_TO_STRING(IOTHUB_CLIENT_CONFIRMATION_RESULT, result)
         );
     } 
     
-    // TODO Write the code to properly destroy the message (you don't want memory leaks and set ctx->sendComplete to true)
-    ...
+    IoTHubMessage_Destroy(ctx->message);
+    ctx->message = NULL;
+
+    ctx->sendComplete = true;
 }
 
 //
@@ -78,10 +77,7 @@ static bool sendDeviceEvent(DEVICE_SIMULATE_CONTEXT *ctx)
 
     size_t msgSize = DeviceMessage_GenerateTelemetryMessage(&ctx->randSeed, msgBuf, sizeof(msgBuf));
 
-
     IOTHUB_MESSAGE_HANDLE message = IoTHubMessage_CreateFromByteArray(msgBuf, msgSize);
-
-
     mresult = IoTHubMessage_SetMessageId(message, msgId);
     mresult = IoTHubMessage_SetCorrelationId(message, corId);
 
@@ -89,12 +85,14 @@ static bool sendDeviceEvent(DEVICE_SIMULATE_CONTEXT *ctx)
     ctx->sendComplete = false;
 
     LogTrace("FW: Device %s. Sending event %u", ctx->deviceId, ctx->event);
+    IOTHUB_CLIENT_RESULT result = IoTHubClient_LL_SendEventAsync(ctx->clientHandle, message, sendConfirmationCallback, ctx);
+    if (IOTHUB_CLIENT_OK != result) {
+        LogError("FW: Device %s failed to send event: %s", ctx->deviceId, ENUM_TO_STRING(IOTHUB_CLIENT_RESULT, result));
+        return false;
+    }
 
-    // TODO Write the code to send the message to IoT Hub using a _LL layer function
-    IOTHUB_CLIENT_RESULT result = ...
-
-    // TODO Write the code till the sendConfirmationCallback callback completes, i.e. till ctx->sendComplete is set to true 
-    ...
+    while (!ctx->sendComplete)
+        IoTHubClient_LL_DoWork(ctx->clientHandle);
 
     return true;
 }
@@ -111,13 +109,18 @@ static void onDeviceConnectionStatus(
 
     LogTrace("FW: In onDeviceConnectionStatus for %s. Result: %u. Reason: %u.", ctx->deviceId, result, reason);
 
-    // TODO check that result and reason conform to succesful result codes and set ctx->connected appropriately
-    ...
+    if (IOTHUB_CLIENT_CONNECTION_AUTHENTICATED == result && IOTHUB_CLIENT_CONNECTION_OK == reason) {
 
+        ctx->connected = true;
 
+    } else {
 
-    // TODO do not forget to set connectComplete as you exit this function
-    ...
+        ctx->connected = false;
+        
+        LogError("FW: Device %s failed to connect. Result: %u. Reason: %u.", ctx->deviceId, result, reason);
+    }
+
+    ctx->connectComplete = true;
 }
 
 //
@@ -136,19 +139,23 @@ static bool connectDevice(DEVICE_SIMULATE_CONTEXT *ctx)
     ctx->connectComplete = false;
     ctx->connected = false;
     
-    // TODO Write the code to establish connection to IoT Hub using _LL functions
+    // TODO Establish a connection to the Hub using _LL functions
     // TODO pass onDeviceConnectionStatus function as a callback for the connection status 
-    ctx->clientHandle = ... ;
+    ctx->clientHandle = IoTHubClient_LL_Create(&ctx->config);
+    if (NULL == ctx->clientHandle) {
+        LogError("FW: Device %s: IoTHubClient_LL_Create failed: %s", ctx->deviceId, strerror(errno));
+        return false;
+    }
     
-    ...
+    IoTHubClient_LL_SetConnectionStatusCallback(ctx->clientHandle, onDeviceConnectionStatus, ctx);
 
     IoTHubClient_LL_SetOption(ctx->clientHandle, "logtrace", &g_simConfig->deviceTrace);
     if (g_simConfig->mqttKeepAlive > 0) 
         IoTHubClient_LL_SetOption(ctx->clientHandle, "keepalive", &g_simConfig->mqttKeepAlive);
 
-    // TODO Write the code to wait till the callback completes, that is till ctx->connectComplete becomes true
-    ...
-    
+    while (!ctx->connectComplete)
+        IoTHubClient_LL_DoWork(ctx->clientHandle);
+
     if (!ctx->connected) {
         IoTHubClient_LL_Destroy(ctx->clientHandle);
         return false;
